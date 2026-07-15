@@ -1,0 +1,64 @@
+name: Build Breach VR APK
+
+# Builds a Quest 3S-ready debug APK on every push and pull request.
+# No licenses required — pure Android/Gradle + NDK (OpenXR via JNI).
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK and CMake
+        run: |
+          sdkmanager --install "ndk;26.1.10909125" "cmake;3.22.1" "platforms;android-34" "build-tools;34.0.0"
+
+      # The runner ships with a system Gradle. Use it once to generate the
+      # committed-less wrapper (jar + gradlew) so ./gradlew works reliably.
+      - name: Bootstrap Gradle wrapper
+        run: |
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            gradle wrapper --gradle-version 8.9
+          fi
+          chmod +x gradlew
+
+      - name: Setup Gradle cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Locate APK
+        id: apk
+        run: |
+          APK=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "Built APK: $APK"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: breach-vr-debug-apk
+          path: app/build/outputs/apk/**/*.apk
+          if-no-files-found: error

@@ -1,0 +1,25 @@
+# Gradle / Android build outputs
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+local.properties
+
+# NDK / native intermediates
+.cxx/
+obj/
+
+# Signing secrets — never commit real keys
+*.keystore
+!debug.keystore
+release.keystore
+keystore.properties
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+.vscode/
+captures/
