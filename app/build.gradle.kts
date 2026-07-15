@@ -60,9 +60,8 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.games:games-activity:3.0.5")
 
-    // Khronos OpenXR loader for Android (provides libopenxr_loader.so + headers).
+    // Khronos OpenXR loader for Android (provides libopenxr_loader.so + headers,
+    // consumed via prefab). native_app_glue comes from the NDK itself.
     implementation("org.khronos.openxr:openxr_loader_for_android:1.1.36")
 }
