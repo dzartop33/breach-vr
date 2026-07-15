@@ -34,8 +34,7 @@ jobs:
         run: |
           sdkmanager --install "ndk;26.1.10909125" "cmake;3.22.1" "platforms;android-34" "build-tools;34.0.0"
 
-      # Download a standalone Gradle so we never depend on a committed wrapper
-      # jar or on PATH state from other actions. Robust and fully self-contained.
+      # Download a standalone Gradle so we never depend on a committed wrapper jar.
       - name: Download Gradle 8.9
         run: |
           set -eux
@@ -46,14 +45,9 @@ jobs:
       - name: Show Gradle version
         run: gradle --version
 
-      - name: Generate Gradle wrapper
-        run: |
-          set -eux
-          gradle wrapper --gradle-version 8.9
-          chmod +x gradlew
-
+      # Build directly with the downloaded Gradle. No wrapper generation needed.
       - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: gradle :app:assembleDebug --stacktrace --no-daemon --info
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
