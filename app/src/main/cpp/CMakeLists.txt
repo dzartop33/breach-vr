@@ -1,27 +1,33 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(breachvr)
 
-# Build our native immersive engine as a shared lib loaded by NativeActivity.
+# --- Android native_app_glue (ships with the NDK) ---
+set(GLUE_DIR ${ANDROID_NDK}/sources/android/native_app_glue)
+
 add_library(breachvr SHARED
         main.cpp
         openxr_app.cpp
+        ${GLUE_DIR}/android_native_app_glue.c
 )
 
-target_include_directories(breachvr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(breachvr PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${GLUE_DIR}
+)
 
-# The OpenXR loader is provided as a prefab by the Khronos AAR dependency.
+# Export ANativeActivity_onCreate so the NativeActivity loader finds it.
+set(CMAKE_SHARED_LINKER_FLAGS
+        "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
+
+# --- OpenXR loader (prefab from the Khronos AAR) ---
 find_package(OpenXR REQUIRED CONFIG)
 
-# Android native app glue + system libs.
+# --- System libraries ---
 find_library(log-lib log)
 find_library(android-lib android)
 
-# games-activity / native_app_glue provided by AndroidX GameActivity prefab.
-find_package(game-activity REQUIRED CONFIG)
-
 target_link_libraries(breachvr
         OpenXR::openxr_loader
-        game-activity::game-activity_static
         EGL
         GLESv3
         ${android-lib}
