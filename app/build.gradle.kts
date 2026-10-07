@@ -22,7 +22,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags += "-std=c++17"
+                cppFlags += "-std=c++17 -Wall -Wextra"
                 arguments += "-DANDROID_STL=c++_shared"
             }
         }
@@ -39,7 +39,6 @@ android {
         release {
             isMinifyEnabled = false
             // Debug signing so CI can produce an installable APK with no secrets.
-            // Replace with a real release keystore before publishing.
             signingConfig = signingConfigs.getByName("debug")
         }
     }

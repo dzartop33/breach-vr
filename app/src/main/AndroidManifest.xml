@@ -11,12 +11,16 @@
 
     <!-- Scene / room scan (build the map from the player's apartment) -->
     <uses-permission android:name="com.oculus.permission.USE_SCENE" />
+    <uses-feature android:name="oculus.software.scene" android:required="false" />
     <uses-feature android:name="com.oculus.feature.PASSTHROUGH" android:required="false" />
 
     <!-- Declare this is a VR/OpenXR immersive app, not a 2D panel app -->
     <uses-feature android:name="android.hardware.vr.headtracking" android:version="1" android:required="true" />
 
-    <!-- Quest 3S device support tag -->
+    <!-- Audio output permission for spatial CQB sound effects -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- Quest 3 / Quest 3S device support tag -->
     <application
         android:allowBackup="false"
         android:hasCode="true"
